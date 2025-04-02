@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hiển thị PDF</title>
+  <style>
+    #pdf-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+      padding: 10px; /* Thêm một chút đệm cho container */
+    }
+
+    canvas {
+      border: 1px solid;
+    }
+  </style>
+</head>
+<body>
+  <div id="pdf-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+
+  <script>
+    const url = 'https://raw.githubusercontent.com/nhathuynguyen19/kinh-te-chinh-tri-marx-lenin/refs/heads/master/documents/giao-trinh-kinh-te-chinh-tri-mac-lenin-khong-chuyen.pdf';
+
+    const container = document.getElementById('pdf-container');
+
+    pdfjsLib.getDocument(url).promise.then(function(pdf) {
+      const totalPages = pdf.numPages;
+
+      // Render tất cả các trang
+      for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+        pdf.getPage(pageNumber).then(function(page) {
+          const canvas = document.createElement('canvas');
+          container.appendChild(canvas); // Thêm canvas vào container
+          const context = canvas.getContext('2d');
+
+          const containerWidth = container.offsetWidth;
+
+          // Tính viewport với tỷ lệ phóng đại
+          const viewport = page.getViewport({ scale: 1.3 });
+
+          // Đặt chiều rộng của canvas bằng với container và tính chiều cao theo tỷ lệ
+          canvas.width = 510;
+          canvas.height = viewport.height;
+
+          // Căn giữa canvas
+          canvas.style.margin = '10px 0';  // Thêm một chút khoảng cách giữa các canvas
+
+          const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+          };
+
+          page.render(renderContext);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
